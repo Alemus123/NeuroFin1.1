@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useAuthStore } from "../store/authStore";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -27,9 +26,10 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Si el token es inválido, limpiar el estado de autenticación
-      const store = useAuthStore.getState();
-      store.logout();
+      // Si el token es inválido, limpiar el localStorage
+      localStorage.removeItem("auth-storage");
+      // Redirigir al login
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }
