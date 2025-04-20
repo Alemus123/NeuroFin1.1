@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: import.meta.env.VITE_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -26,9 +26,9 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Si el token es inválido, limpiar el localStorage y redirigir al login
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      // Si el token es inválido, limpiar el localStorage
+      localStorage.removeItem("auth-storage");
+      // Redirigir al login
       window.location.href = "/login";
     }
     return Promise.reject(error);

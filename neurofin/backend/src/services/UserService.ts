@@ -1,8 +1,7 @@
-import { Service } from "@tsed/di";
-import { BadRequest } from "@tsed/exceptions";
-import { readFileSync } from "fs";
-import { join } from "path";
-import bcrypt from "bcryptjs";
+import { Service } from '@tsed/di';
+import { BadRequest } from '@tsed/exceptions';
+import bcrypt from 'bcryptjs';
+import { users } from '../data/users';
 
 interface User {
   id: string;
@@ -20,25 +19,24 @@ export class UserService {
 
   constructor() {
     try {
-      const usersData = readFileSync(join(__dirname, "../data/users.json"), "utf-8");
-      this.users = JSON.parse(usersData).users;
-      console.log("Usuarios cargados correctamente:", this.users.length);
+      this.users = users;
+      console.log('Usuarios cargados correctamente:', this.users.length);
     } catch (error) {
-      console.error("Error al cargar usuarios:", error);
+      console.error('Error al cargar usuarios:', error);
       this.users = [];
     }
   }
 
   async findByEmail(email: string): Promise<User | undefined> {
     try {
-      const user = this.users.find(user => user.email === email);
+      const user = this.users.find((user) => user.email === email);
       if (!user) {
         console.log(`Usuario no encontrado para email: ${email}`);
       }
       return user;
     } catch (error) {
-      console.error("Error en findByEmail:", error);
-      throw new BadRequest("Error al buscar usuario");
+      console.error('Error en findByEmail:', error);
+      throw new BadRequest('Error al buscar usuario');
     }
   }
 
@@ -48,8 +46,8 @@ export class UserService {
       console.log(`Validación de contraseña para ${user.email}: ${isValid}`);
       return isValid;
     } catch (error) {
-      console.error("Error en validatePassword:", error);
-      throw new BadRequest("Error al validar contraseña");
+      console.error('Error en validatePassword:', error);
+      throw new BadRequest('Error al validar contraseña');
     }
   }
 
