@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Grid, Paper, Typography, Card, CardContent, LinearProgress, useTheme, Chip } from '@mui/material';
 import { TrendingUp, TrendingDown, Warning, CheckCircle, AccountBalance, LocationOn } from '@mui/icons-material';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import ExpensesChart from '../../components/ExpensesChart/ExpensesChart';
 import { TransactionsChart } from '../../components/TransactionsChart/TransactionsChart';
 import { Avatar } from '../../components/Avatar/Avatar';
 import { UserAvatar } from '../../components/UserAvatar/UserAvatar';
+import { Map } from '../../components/Map/Map';
 
 interface Transaction {
   date: string;
@@ -271,26 +271,66 @@ const Dashboard = () => {
           <UserAvatar healthStatus={financialHealth.status} />
         </Grid>
 
-        {locationInfo && (
-          <Grid item xs={12}>
-            <Card sx={{ height: 400, bgcolor: theme.palette.background.paper }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Ubicación
-                </Typography>
-                <LoadScript googleMapsApiKey="TU_API_KEY_DE_GOOGLE_MAPS">
-                  <GoogleMap
-                    mapContainerStyle={{ width: '100%', height: '300px' }}
-                    center={locationInfo.coordinates}
-                    zoom={10}
-                  >
-                    <Marker position={locationInfo.coordinates} />
-                  </GoogleMap>
-                </LoadScript>
-              </CardContent>
-            </Card>
-          </Grid>
-        )}
+        <Grid item xs={12} md={6}>
+          <Card sx={{
+            maxWidth: 800,
+            m: 2,
+            background: theme.palette.background.paper,
+            borderRadius: 4,
+            border: `2px solid ${theme.palette.primary.main}`,
+            boxShadow: `0 8px 32px ${theme.palette.primary.main}25`,
+            transition: 'all 0.3s ease-in-out',
+            '&:hover': {
+              transform: 'translateY(-5px)',
+              boxShadow: `0 12px 40px ${theme.palette.primary.main}40`
+            }
+          }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.primary.light} 90%)`,
+                WebkitBackgroundClip: 'text',
+                color: 'transparent',
+                fontWeight: 'bold'
+              }}>
+                <LocationOn sx={{ color: theme.palette.primary.main }} />
+                Ubicación
+              </Typography>
+              <Box sx={{
+                height: 400,
+                width: '100%',
+                mt: 2,
+                borderRadius: 2,
+                overflow: 'hidden',
+                border: `1px solid ${theme.palette.divider}`
+              }}>
+                {locationInfo && (
+                  <Map
+                    center={[locationInfo.coordinates.lat, locationInfo.coordinates.lng]}
+                    zoom={13}
+                    markers={[
+                      {
+                        position: [locationInfo.coordinates.lat, locationInfo.coordinates.lng],
+                        title: "Tu ubicación",
+                        description: `${locationInfo.country} - ${locationInfo.timezone}`
+                      }
+                    ]}
+                  />
+                )}
+              </Box>
+              <Typography variant="body2" sx={{
+                mt: 2,
+                color: theme.palette.primary.main,
+                textAlign: 'center',
+                fontStyle: 'italic'
+              }}>
+                {locationInfo ? `${locationInfo.country} - ${locationInfo.currency}` : 'Cargando ubicación...'}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
     </Box>
   );

@@ -65,18 +65,18 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 }) => {
   const theme = useTheme();
   const [activeTab, setActiveTab] = useState(0);
+  const [avatarSvg, setAvatarSvg] = useState<string>('');
   const [avatarConfig, setAvatarConfig] = useState<AvatarConfig>(() => {
-    // Intentar cargar la configuración guardada
     const savedConfig = localStorage.getItem('avatarConfig');
     if (savedConfig) {
       return JSON.parse(savedConfig);
     }
     return {
       seed: 'neurofin',
-      hairColor: 'brown',
-      skinColor: 'light',
-      clothesColor: 'blue01',
-      clothesType: 'blazerShirt',
+      hairColor: 'brown' as HairColor,
+      skinColor: 'light' as SkinColor,
+      clothesColor: 'blue01' as ClothesColor,
+      clothesType: 'blazerShirt' as ClothesType,
       accessoriesType: undefined,
       facialHair: undefined,
       eyebrow: 'default',
@@ -84,7 +84,6 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
       eyes: 'default'
     };
   });
-  const [avatarSvg, setAvatarSvg] = useState<string>('');
 
   const getHealthStyle = (status: string) => {
     switch (status) {
@@ -152,9 +151,9 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
       const avatar = createAvatar(style, {
         seed: config.seed,
         top: ['shortHair'],
-        accessoriesType: config.accessoriesType ? [config.accessoriesType] : [],
+        accessories: config.accessoriesType ? [config.accessoriesType] : [],
         hairColor: [config.hairColor],
-        facialHairType: config.facialHair ? [config.facialHair] : [],
+        facialHair: config.facialHair ? [config.facialHair] : [],
         clotheType: [config.clothesType],
         clotheColor: [config.clothesColor],
         skinColor: [config.skinColor],
@@ -165,7 +164,6 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 
       setAvatarSvg(avatar);
       setAvatarConfig(config);
-      // Guardar en localStorage
       localStorage.setItem('avatarConfig', JSON.stringify(config));
     } catch (error) {
       console.error('Error al generar el avatar:', error);
@@ -193,8 +191,8 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     const healthStyle = getHealthStyle(healthStatus);
     const defaultConfig = {
       seed: 'neurofin',
-      hairColor: 'brown',
-      skinColor: 'light',
+      hairColor: 'brown' as HairColor,
+      skinColor: 'light' as SkinColor,
       clothesColor: healthStyle.clothesColor,
       clothesType: healthStyle.clothesType,
       accessoriesType: undefined,
@@ -212,7 +210,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   return (
     <Card
       sx={{
-        maxWidth: 400,
+        maxWidth: 800,
         m: 2,
         background: theme.palette.background.paper,
         borderRadius: 4,
@@ -226,168 +224,224 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
       }}
     >
       <CardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="h5" fontWeight="bold" sx={{
-            background: healthStyle.gradient,
-            WebkitBackgroundClip: 'text',
-            color: 'transparent'
-          }}>
-            Tu Avatar Financiero
-          </Typography>
-          <Box>
-            <Tooltip title="Guardar configuración">
-              <IconButton onClick={handleSave} color="primary">
-                <Save />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Restablecer">
-              <IconButton onClick={handleReset} color="secondary">
-                <Refresh />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </Box>
+        <Grid container>
+          {/* Columna del Avatar */}
+          <Grid item xs={12} md={6}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography variant="h5" fontWeight="bold" sx={{
+                background: healthStyle.gradient,
+                WebkitBackgroundClip: 'text',
+                color: 'transparent'
+              }}>
+                Tu Avatar Financiero
+              </Typography>
+              <Box>
+                <Tooltip title="Guardar configuración">
+                  <IconButton onClick={handleSave} color="primary">
+                    <Save />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Restablecer">
+                  <IconButton onClick={handleReset} color="secondary">
+                    <Refresh />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            </Box>
 
-        <Box
-          sx={{
-            width: '100%',
-            height: 300,
-            background: healthStyle.gradient,
-            borderRadius: 2,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-            overflow: 'hidden',
-            mb: 2,
-            p: 2
-          }}
-        >
-          {avatarSvg && (
             <Box
-              dangerouslySetInnerHTML={{ __html: avatarSvg }}
               sx={{
                 width: '100%',
-                height: '100%',
-                '& svg': {
-                  width: '100%',
-                  height: '100%'
+                height: '400px',
+                background: healthStyle.gradient,
+                borderRadius: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+                overflow: 'hidden',
+                mb: 2,
+                p: 2
+              }}
+            >
+              {avatarSvg ? (
+                <Box
+                  dangerouslySetInnerHTML={{ __html: avatarSvg }}
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    '& svg': {
+                      width: '100%',
+                      height: '100%',
+                      transform: 'scale(1.2)',
+                      transformOrigin: 'center center'
+                    }
+                  }}
+                />
+              ) : (
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: 2
+                  }}
+                >
+                  <Typography variant="h6" sx={{ color: 'white', textAlign: 'center' }}>
+                    Personaliza tu avatar para ver los cambios
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+
+            <Tabs
+              value={activeTab}
+              onChange={handleTabChange}
+              variant="scrollable"
+              scrollButtons="auto"
+              sx={{
+                borderBottom: 1,
+                borderColor: 'divider',
+                mb: 2,
+                '& .MuiTab-root': {
+                  minWidth: 'auto',
+                  px: 2
                 }
               }}
-            />
-          )}
-        </Box>
+            >
+              <Tab icon={<Face />} label="Rostro" />
+              <Tab icon={<ColorLens />} label="Color" />
+              <Tab icon={<Style />} label="Ropa" />
+              <Tab icon={<Mood />} label="Expresión" />
+            </Tabs>
 
-        <Tabs
-          value={activeTab}
-          onChange={handleTabChange}
-          variant="scrollable"
-          scrollButtons="auto"
-          sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}
-        >
-          <Tab icon={<Face />} label="Rostro" />
-          <Tab icon={<ColorLens />} label="Color" />
-          <Tab icon={<Style />} label="Ropa" />
-          <Tab icon={<Mood />} label="Expresión" />
-        </Tabs>
+            <Box sx={{ p: 2 }}>
+              {activeTab === 0 && (
+                <Grid container spacing={2}>
+                  <Grid item xs={12} md={6}>
+                    <FormControl fullWidth>
+                      <InputLabel>Tono de Piel</InputLabel>
+                      <Select
+                        value={avatarConfig.skinColor}
+                        onChange={(e) => handleConfigChange('skinColor', e.target.value as SkinColor)}
+                        label="Tono de Piel"
+                      >
+                        {SKIN_COLORS.map((color) => (
+                          <MenuItem key={color} value={color}>
+                            {color.charAt(0).toUpperCase() + color.slice(1).replace(/([A-Z])/g, ' $1')}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <FormControl fullWidth>
+                      <InputLabel>Accesorios</InputLabel>
+                      <Select
+                        value={avatarConfig.accessoriesType || ''}
+                        onChange={(e) => handleConfigChange('accessoriesType', e.target.value as AccessoryType)}
+                        label="Accesorios"
+                      >
+                        <MenuItem value="">Ninguno</MenuItem>
+                        {ACCESSORIES.map((accessory) => (
+                          <MenuItem key={accessory} value={accessory}>
+                            {accessory.charAt(0).toUpperCase() + accessory.slice(1).replace(/([A-Z])/g, ' $1')}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                </Grid>
+              )}
 
-        <Box sx={{ p: 2 }}>
-          {activeTab === 0 && (
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel>Tono de Piel</InputLabel>
-                  <Select
-                    value={avatarConfig.skinColor}
-                    onChange={(e) => handleConfigChange('skinColor', e.target.value as SkinColor)}
-                    label="Tono de Piel"
-                  >
-                    {SKIN_COLORS.map((color) => (
-                      <MenuItem key={color} value={color}>
-                        {color.charAt(0).toUpperCase() + color.slice(1).replace(/([A-Z])/g, ' $1')}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel>Accesorios</InputLabel>
-                  <Select
-                    value={avatarConfig.accessoriesType || ''}
-                    onChange={(e) => handleConfigChange('accessoriesType', e.target.value as AccessoryType)}
-                    label="Accesorios"
-                  >
-                    <MenuItem value="">Ninguno</MenuItem>
-                    {ACCESSORIES.map((accessory) => (
-                      <MenuItem key={accessory} value={accessory}>
-                        {accessory.charAt(0).toUpperCase() + accessory.slice(1).replace(/([A-Z])/g, ' $1')}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-            </Grid>
-          )}
+              {activeTab === 1 && (
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <FormControl fullWidth>
+                      <InputLabel>Color de Pelo</InputLabel>
+                      <Select
+                        value={avatarConfig.hairColor}
+                        onChange={(e) => handleConfigChange('hairColor', e.target.value as HairColor)}
+                        label="Color de Pelo"
+                      >
+                        {HAIR_COLORS.map((color) => (
+                          <MenuItem key={color} value={color}>
+                            {color.charAt(0).toUpperCase() + color.slice(1).replace(/([A-Z])/g, ' $1')}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                </Grid>
+              )}
 
-          {activeTab === 1 && (
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel>Color de Pelo</InputLabel>
-                  <Select
-                    value={avatarConfig.hairColor}
-                    onChange={(e) => handleConfigChange('hairColor', e.target.value as HairColor)}
-                    label="Color de Pelo"
-                  >
-                    {HAIR_COLORS.map((color) => (
-                      <MenuItem key={color} value={color}>
-                        {color.charAt(0).toUpperCase() + color.slice(1).replace(/([A-Z])/g, ' $1')}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-            </Grid>
-          )}
+              {activeTab === 2 && (
+                <Grid container spacing={2}>
+                  <Grid item xs={12} md={6}>
+                    <FormControl fullWidth>
+                      <InputLabel>Tipo de Ropa</InputLabel>
+                      <Select
+                        value={avatarConfig.clothesType}
+                        onChange={(e) => handleConfigChange('clothesType', e.target.value as ClothesType)}
+                        label="Tipo de Ropa"
+                      >
+                        {CLOTHES_TYPES.map((type) => (
+                          <MenuItem key={type} value={type}>
+                            {type.charAt(0).toUpperCase() + type.slice(1).replace(/([A-Z])/g, ' $1')}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <FormControl fullWidth>
+                      <InputLabel>Color de Ropa</InputLabel>
+                      <Select
+                        value={avatarConfig.clothesColor}
+                        onChange={(e) => handleConfigChange('clothesColor', e.target.value as ClothesColor)}
+                        label="Color de Ropa"
+                      >
+                        {CLOTHES_COLORS.map((color) => (
+                          <MenuItem key={color} value={color}>
+                            {color.charAt(0).toUpperCase() + color.slice(1).replace(/([A-Z])/g, ' $1')}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                </Grid>
+              )}
+            </Box>
+          </Grid>
 
-          {activeTab === 2 && (
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel>Tipo de Ropa</InputLabel>
-                  <Select
-                    value={avatarConfig.clothesType}
-                    onChange={(e) => handleConfigChange('clothesType', e.target.value as ClothesType)}
-                    label="Tipo de Ropa"
-                  >
-                    {CLOTHES_TYPES.map((type) => (
-                      <MenuItem key={type} value={type}>
-                        {type.charAt(0).toUpperCase() + type.slice(1).replace(/([A-Z])/g, ' $1')}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel>Color de Ropa</InputLabel>
-                  <Select
-                    value={avatarConfig.clothesColor}
-                    onChange={(e) => handleConfigChange('clothesColor', e.target.value as ClothesColor)}
-                    label="Color de Ropa"
-                  >
-                    {CLOTHES_COLORS.map((color) => (
-                      <MenuItem key={color} value={color}>
-                        {color.charAt(0).toUpperCase() + color.slice(1).replace(/([A-Z])/g, ' $1')}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-            </Grid>
-          )}
-        </Box>
+          {/* Columna del Avatar */}
+          <Grid item xs={12} md={6}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography variant="h5" fontWeight="bold" sx={{
+                background: healthStyle.gradient,
+                WebkitBackgroundClip: 'text',
+                color: 'transparent'
+              }}>
+                Tu Avatar Financiero
+              </Typography>
+              <Box>
+                <Tooltip title="Guardar configuración">
+                  <IconButton onClick={handleSave} color="primary">
+                    <Save />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Restablecer">
+                  <IconButton onClick={handleReset} color="secondary">
+                    <Refresh />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            </Box>
+          </Grid>
+        </Grid>
 
         <Typography variant="body2" sx={{
           mt: 2,
@@ -401,3 +455,5 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     </Card>
   );
 };
+
+export default UserAvatar;
