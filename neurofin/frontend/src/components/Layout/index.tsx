@@ -26,6 +26,7 @@ import {
   Logout as LogoutIcon,
 } from "@mui/icons-material";
 import { useAuthStore } from "../../store/authStore";
+import { ThemeToggle } from "../ThemeToggle/ThemeToggle";
 
 const drawerWidth = 240;
 
@@ -106,6 +107,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             NeuroFin
           </Typography>
+          <ThemeToggle />
           <Button
             color="inherit"
             startIcon={<LogoutIcon />}
