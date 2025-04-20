@@ -12,7 +12,6 @@ Backend de la aplicación NeuroFin, desarrollado con Node.js y Ts.ED. Proporcion
 ## Requisitos Previos
 - Node.js (versión 18 o superior)
 - npm o yarn
-- MongoDB (versión 4.4 o superior)
 
 ## Instalación
 
@@ -45,9 +44,9 @@ JWT_SECRET=tu_secreto_jwt
 
 Para iniciar el servidor en modo desarrollo:
 ```bash
-npm run start:dev
+npm run dev
 # o
-yarn start:dev
+yarn dev
 ```
 
 ## Construcción
