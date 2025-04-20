@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useRouter } from "next/router";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
   Button,
@@ -7,16 +7,18 @@ import {
   Typography,
   Container,
   Paper,
+  CircularProgress,
 } from "@mui/material";
-import api from "../utils/api";
+import { useAuthStore } from "../store/authStore";
 
 export default function Login() {
-  const router = useRouter();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { login, isLoading, error, setError } = useAuthStore();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [error, setError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -24,31 +26,23 @@ export default function Login() {
       ...prev,
       [name]: value,
     }));
+    setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-
     try {
-      const response = await api.post("/auth/login", formData);
-
-      if (response.data.success) {
-        // Guardar token en localStorage
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-
-        // Redirigir al dashboard
-        router.push("/dashboard");
-      }
+      const { email, password } = formData;
+      await login(email, password);
+      const from = location.state?.from?.pathname || "/dashboard";
+      navigate(from, { replace: true });
     } catch (err) {
-      setError("Credenciales inválidas");
       console.error("Error de login:", err);
     }
   };
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container maxWidth="sm">
       <Box
         sx={{
           marginTop: 8,
@@ -57,21 +51,30 @@ export default function Login() {
           alignItems: "center",
         }}
       >
-        <Paper elevation={3} sx={{ p: 4, width: "100%" }}>
-          <Typography component="h1" variant="h5" align="center" gutterBottom>
-            NeuroFin
-          </Typography>
-          <Typography component="h2" variant="h6" align="center" gutterBottom>
+        <Paper
+          elevation={3}
+          sx={{
+            padding: 4,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            width: "100%",
+          }}
+        >
+          <Typography component="h1" variant="h5">
             Iniciar Sesión
           </Typography>
-
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{ mt: 1, width: "100%" }}
+          >
             <TextField
               margin="normal"
               required
               fullWidth
               id="email"
-              label="Email"
+              label="Correo Electrónico"
               name="email"
               autoComplete="email"
               autoFocus
@@ -90,20 +93,19 @@ export default function Login() {
               value={formData.password}
               onChange={handleChange}
             />
-
             {error && (
-              <Typography color="error" align="center" sx={{ mt: 2 }}>
+              <Typography color="error" sx={{ mt: 2 }}>
                 {error}
               </Typography>
             )}
-
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={isLoading}
             >
-              Iniciar Sesión
+              {isLoading ? <CircularProgress size={24} /> : "Iniciar Sesión"}
             </Button>
           </Box>
         </Paper>

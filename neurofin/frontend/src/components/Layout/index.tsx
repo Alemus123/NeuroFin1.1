@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Box,
   Drawer,
@@ -13,16 +13,19 @@ import {
   ListItemIcon,
   ListItemText,
   Container,
-  useTheme
-} from '@mui/material';
+  useTheme,
+  Button,
+} from "@mui/material";
 import {
   Menu as MenuIcon,
   Dashboard as DashboardIcon,
   Person as PersonIcon,
   Payment as PaymentIcon,
   School as SchoolIcon,
-  AccountBalance as AccountBalanceIcon
-} from '@mui/icons-material';
+  AccountBalance as AccountBalanceIcon,
+  Logout as LogoutIcon,
+} from "@mui/icons-material";
+import { useAuthStore } from "../../store/authStore";
 
 const drawerWidth = 240;
 
@@ -33,17 +36,24 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
+  const navigate = useNavigate();
+  const { logout } = useAuthStore();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-    { text: 'Perfil', icon: <PersonIcon />, path: '/profile' },
-    { text: 'Pagos Domiciliados', icon: <PaymentIcon />, path: '/payments' },
-    { text: 'Educación Financiera', icon: <SchoolIcon />, path: '/education' },
-    { text: 'Caja Fuerte', icon: <AccountBalanceIcon />, path: '/safebox' }
+    { text: "Dashboard", icon: <DashboardIcon />, path: "/" },
+    { text: "Perfil", icon: <PersonIcon />, path: "/profile" },
+    { text: "Pagos Domiciliados", icon: <PaymentIcon />, path: "/payments" },
+    { text: "Educación Financiera", icon: <SchoolIcon />, path: "/education" },
+    { text: "Caja Fuerte", icon: <AccountBalanceIcon />, path: "/safebox" },
   ];
 
   const drawer = (
@@ -61,12 +71,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <ListItemText primary={item.text} />
           </ListItem>
         ))}
+        <Divider />
+        <ListItem button onClick={handleLogout}>
+          <ListItemIcon>
+            <LogoutIcon />
+          </ListItemIcon>
+          <ListItemText primary="Cerrar Sesión" />
+        </ListItem>
       </List>
     </div>
   );
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <AppBar
         position="fixed"
         sx={{
@@ -82,13 +99,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
+            sx={{ mr: 2, display: { sm: "none" } }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             NeuroFin
           </Typography>
+          <Button
+            color="inherit"
+            startIcon={<LogoutIcon />}
+            onClick={handleLogout}
+          >
+            Cerrar Sesión
+          </Button>
         </Toolbar>
       </AppBar>
       <Box
@@ -103,9 +127,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             keepMounted: true,
           }}
           sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
+            display: { xs: "block", sm: "none" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
               width: drawerWidth,
               bgcolor: theme.palette.background.paper,
               color: theme.palette.text.primary,
@@ -117,9 +141,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <Drawer
           variant="permanent"
           sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
+            display: { xs: "none", sm: "block" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
               width: drawerWidth,
               bgcolor: theme.palette.background.paper,
               color: theme.palette.text.primary,
@@ -137,13 +161,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           p: 3,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           bgcolor: theme.palette.background.default,
-          minHeight: '100vh',
+          minHeight: "100vh",
         }}
       >
         <Toolbar />
-        <Container maxWidth="lg">
-          {children}
-        </Container>
+        <Container maxWidth="lg">{children}</Container>
       </Box>
     </Box>
   );
