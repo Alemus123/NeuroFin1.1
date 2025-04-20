@@ -9,6 +9,7 @@ import {
   Paper,
   CircularProgress,
 } from "@mui/material";
+import { motion } from "framer-motion";
 import { useAuthStore } from "../store/authStore";
 
 export default function Login() {
@@ -42,74 +43,167 @@ export default function Login() {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        background: "linear-gradient(45deg, #1a237e 30%, #283593 90%)",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Fondo animado */}
       <Box
+        component={motion.div}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
         sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          backgroundImage: "url('/images/finance-bg.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: 0.2,
         }}
+      />
+
+      {/* Contenido */}
+      <Container
+        maxWidth="lg"
+        sx={{ display: "flex", alignItems: "center", height: "100vh" }}
       >
-        <Paper
-          elevation={3}
+        <Box
           sx={{
-            padding: 4,
             display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
             width: "100%",
+            justifyContent: "flex-end",
           }}
         >
-          <Typography component="h1" variant="h5">
-            Iniciar Sesión
-          </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{ mt: 1, width: "100%" }}
+          <Paper
+            component={motion.div}
+            initial={{ x: 100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            elevation={3}
+            sx={{
+              padding: 4,
+              width: "400px",
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              backdropFilter: "blur(10px)",
+              borderRadius: "16px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
           >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Correo Electrónico"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={formData.email}
-              onChange={handleChange}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Contraseña"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-            {error && (
-              <Typography color="error" sx={{ mt: 2 }}>
-                {error}
-              </Typography>
-            )}
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              disabled={isLoading}
+            <Typography
+              component="h1"
+              variant="h4"
+              sx={{
+                textAlign: "center",
+                mb: 4,
+                color: "#1a237e",
+                fontWeight: "bold",
+              }}
             >
-              {isLoading ? <CircularProgress size={24} /> : "Iniciar Sesión"}
-            </Button>
-          </Box>
-        </Paper>
-      </Box>
-    </Container>
+              NeuroFin
+            </Typography>
+            <Typography
+              component="h2"
+              variant="h5"
+              sx={{
+                textAlign: "center",
+                mb: 4,
+                color: "#283593",
+              }}
+            >
+              Iniciar Sesión
+            </Typography>
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+              sx={{
+                mt: 1,
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+              }}
+            >
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Correo Electrónico"
+                name="email"
+                autoComplete="email"
+                autoFocus
+                value={formData.email}
+                onChange={handleChange}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "#1a237e",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "#283593",
+                    },
+                  },
+                }}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Contraseña"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                value={formData.password}
+                onChange={handleChange}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "#1a237e",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "#283593",
+                    },
+                  },
+                }}
+              />
+              {error && (
+                <Typography color="error" sx={{ mt: 2 }}>
+                  {error}
+                </Typography>
+              )}
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{
+                  mt: 2,
+                  backgroundColor: "#1a237e",
+                  "&:hover": {
+                    backgroundColor: "#283593",
+                  },
+                  height: "48px",
+                  borderRadius: "8px",
+                  textTransform: "none",
+                  fontSize: "1rem",
+                }}
+                disabled={isLoading}
+              >
+                {isLoading ? <CircularProgress size={24} /> : "Iniciar Sesión"}
+              </Button>
+            </Box>
+          </Paper>
+        </Box>
+      </Container>
+    </Box>
   );
 }
