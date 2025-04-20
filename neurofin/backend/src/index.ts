@@ -26,11 +26,17 @@ import { AuthController } from "./controllers/AuthController";
     }
   ],
   middlewares: [
-    cors(),
+    cors({
+      origin: true,
+      credentials: true
+    }),
     express.json(),
     express.urlencoded({ extended: true })
   ],
-  port: process.env.PORT || 8000
+  port: process.env.PORT || 8000,
+  logger: {
+    level: "debug"
+  }
 })
 class Server {
   @Inject()
@@ -42,13 +48,15 @@ class Server {
 
 async function bootstrap() {
   try {
+    console.log("Iniciando servidor...");
     const server = await PlatformExpress.bootstrap(Server);
     await server.listen();
-    console.log(`Server running at http://localhost:${process.env.PORT || 8000}`);
-    console.log(`Swagger disponible en http://localhost:${process.env.PORT || 8000}/docs`);
+    console.log(`Servidor ejecutándose en http://localhost:${process.env.PORT || 8000}`);
+    console.log(`Documentación Swagger disponible en http://localhost:${process.env.PORT || 8000}/docs`);
   } catch (error) {
-    console.error(error);
+    console.error("Error al iniciar el servidor:", error);
+    process.exit(1);
   }
 }
 
-bootstrap(); 
+bootstrap();

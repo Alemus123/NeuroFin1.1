@@ -24,9 +24,12 @@ export class AuthController {
   @Description('Iniciar sesión en el sistema')
   async login(@Description('Credenciales de usuario') @BodyParams() credentials: LoginDto) {
     try {
+      console.log(`Intento de login para: ${credentials.email}`);
+
       const user = await this.userService.findByEmail(credentials.email);
 
       if (!user) {
+        console.log(`Usuario no encontrado: ${credentials.email}`);
         return {
           success: false,
           message: 'Usuario no encontrado',
@@ -36,6 +39,7 @@ export class AuthController {
       const isValidPassword = await this.userService.validatePassword(user, credentials.password);
 
       if (!isValidPassword) {
+        console.log(`Contraseña incorrecta para: ${credentials.email}`);
         return {
           success: false,
           message: 'Contraseña incorrecta',
@@ -51,6 +55,7 @@ export class AuthController {
         { expiresIn: '1h' },
       );
 
+      console.log(`Login exitoso para: ${credentials.email}`);
       return {
         success: true,
         token,
