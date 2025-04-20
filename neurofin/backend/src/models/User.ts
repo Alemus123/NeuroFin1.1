@@ -1,9 +1,9 @@
-import { Property, Required, Format, MinLength } from "@tsed/schema";
-import { Model, ObjectID } from "@tsed/mongoose";
+/*import { Property, Required, Format, MinLength } from '@tsed/schema';
+import { Model, ObjectID } from '@tsed/mongoose';
 
 @Model()
 export class User {
-  @ObjectID("id")
+  @ObjectID('id')
   _id: string;
 
   @Property()
@@ -16,7 +16,7 @@ export class User {
 
   @Property()
   @Required()
-  @Format("email")
+  @Format('email')
   email: string;
 
   @Property()
@@ -29,4 +29,5 @@ export class User {
 
   @Property()
   updatedAt: Date = new Date();
-} 
+}
+*/
