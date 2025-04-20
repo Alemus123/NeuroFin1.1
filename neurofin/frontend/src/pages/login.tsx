@@ -16,6 +16,7 @@ import { Person, Lock } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { useAuthStore } from "../store/authStore";
 import backgroundImage from "../assets/background.jpg";
+import neuroLogo from "../assets/neuro.jpeg";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -114,9 +115,18 @@ export default function Login() {
                 justifyContent: "center",
                 mb: 2,
                 border: "1px solid rgba(255, 255, 255, 0.2)",
+                overflow: "hidden",
               }}
             >
-              <Person sx={{ fontSize: 40, color: "white" }} />
+              <img
+                src={neuroLogo}
+                alt="NeuroFin Logo"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
             </Box>
           </motion.div>
         </Box>
