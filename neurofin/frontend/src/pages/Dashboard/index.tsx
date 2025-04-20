@@ -5,6 +5,7 @@ import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import ExpensesChart from '../../components/ExpensesChart/ExpensesChart';
 import { TransactionsChart } from '../../components/TransactionsChart/TransactionsChart';
 import { Avatar } from '../../components/Avatar/Avatar';
+import { UserAvatar } from '../../components/UserAvatar/UserAvatar';
 
 interface Transaction {
   date: string;
@@ -264,6 +265,10 @@ const Dashboard = () => {
               <TransactionsChart transactions={transactions} currency={locationInfo?.currency || 'EUR'} />
             </CardContent>
           </Card>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <UserAvatar healthStatus={financialHealth.status} />
         </Grid>
 
         {locationInfo && (
