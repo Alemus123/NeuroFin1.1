@@ -211,7 +211,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     <Card
       sx={{
         maxWidth: 800,
-        m: 2,
+        margin: 'auto',
         background: theme.palette.background.paper,
         borderRadius: 4,
         border: `2px solid ${healthStyle.borderColor}`,
@@ -224,9 +224,9 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
       }}
     >
       <CardContent>
-        <Grid container>
+        <Grid container spacing={3}>
           {/* Columna del Avatar */}
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography variant="h5" fontWeight="bold" sx={{
                 background: healthStyle.gradient,
@@ -414,31 +414,6 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
                   </Grid>
                 </Grid>
               )}
-            </Box>
-          </Grid>
-
-          {/* Columna del Avatar */}
-          <Grid item xs={12} md={6}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h5" fontWeight="bold" sx={{
-                background: healthStyle.gradient,
-                WebkitBackgroundClip: 'text',
-                color: 'transparent'
-              }}>
-                Tu Avatar Financiero
-              </Typography>
-              <Box>
-                <Tooltip title="Guardar configuración">
-                  <IconButton onClick={handleSave} color="primary">
-                    <Save />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Restablecer">
-                  <IconButton onClick={handleReset} color="secondary">
-                    <Refresh />
-                  </IconButton>
-                </Tooltip>
-              </Box>
             </Box>
           </Grid>
         </Grid>
