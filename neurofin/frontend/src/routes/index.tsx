@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import Login from "../pages/login";
+import Register from "../pages/register";
 import Dashboard from "../pages/Dashboard";
 import Profile from "../pages/Profile";
 import RecurringPayments from "../pages/RecurringPayments";
@@ -14,6 +15,7 @@ const AppRoutes: React.FC = () => {
     <Routes>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
       <Route
         path="/dashboard"
         element={

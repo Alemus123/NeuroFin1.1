@@ -24,14 +24,19 @@ interface SavingsGoal {
   monthlyContribution: number;
 }
 
+interface NewGoal extends Omit<SavingsGoal, 'id' | 'currentAmount'> {
+  initialAmount?: number;
+}
+
 const SafeBox = () => {
   const [goals, setGoals] = useState<SavingsGoal[]>([]);
-  const [newGoal, setNewGoal] = useState<Partial<SavingsGoal>>({});
+  const [newGoal, setNewGoal] = useState<Partial<NewGoal>>({});
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState<SavingsGoal | null>(null);
   const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
   const [error, setError] = useState<string>('');
+  const [isDeposit, setIsDeposit] = useState(false);
 
   const handleAddGoal = () => {
     if (!newGoal.name || !newGoal.targetAmount || !newGoal.targetDate || !newGoal.monthlyContribution) {
@@ -39,12 +44,37 @@ const SafeBox = () => {
       return;
     }
 
+    const selectedDate = new Date(newGoal.targetDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+      setError('La fecha objetivo no puede ser anterior al día actual');
+      return;
+    }
+
+    if (newGoal.targetAmount <= 0) {
+      setError('La cantidad objetivo debe ser mayor a 0');
+      return;
+    }
+
+    if (newGoal.monthlyContribution <= 0) {
+      setError('El aporte mensual debe ser mayor a 0');
+      return;
+    }
+
+    const initialAmount = newGoal.initialAmount || 0;
+    if (initialAmount < 0) {
+      setError('La cantidad inicial no puede ser negativa');
+      return;
+    }
+
     const goal: SavingsGoal = {
       id: Date.now().toString(),
       name: newGoal.name,
       targetAmount: newGoal.targetAmount,
-      currentAmount: 0,
-      targetDate: new Date(newGoal.targetDate),
+      currentAmount: initialAmount,
+      targetDate: selectedDate,
       monthlyContribution: newGoal.monthlyContribution
     };
 
@@ -54,10 +84,10 @@ const SafeBox = () => {
     setError('');
   };
 
-  const handleWithdraw = () => {
+  const handleTransaction = () => {
     if (!selectedGoal) return;
 
-    if (withdrawAmount > selectedGoal.currentAmount) {
+    if (!isDeposit && withdrawAmount > selectedGoal.currentAmount) {
       setError('No puedes retirar más de lo que tienes ahorrado');
       return;
     }
@@ -66,7 +96,9 @@ const SafeBox = () => {
       if (goal.id === selectedGoal.id) {
         return {
           ...goal,
-          currentAmount: goal.currentAmount - withdrawAmount
+          currentAmount: isDeposit 
+            ? goal.currentAmount + withdrawAmount 
+            : goal.currentAmount - withdrawAmount
         };
       }
       return goal;
@@ -77,6 +109,7 @@ const SafeBox = () => {
     setWithdrawAmount(0);
     setSelectedGoal(null);
     setError('');
+    setIsDeposit(false);
   };
 
   const calculateProgress = (goal: SavingsGoal) => {
@@ -130,13 +163,25 @@ const SafeBox = () => {
                         color={isDateLocked(goal) ? 'warning' : 'success'}
                       />
                     </Box>
-                    <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                    <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => {
+                          setSelectedGoal(goal);
+                          setIsDeposit(true);
+                          setWithdrawDialogOpen(true);
+                        }}
+                      >
+                        Agregar
+                      </Button>
                       <Button
                         variant="outlined"
                         color="primary"
                         disabled={isDateLocked(goal)}
                         onClick={() => {
                           setSelectedGoal(goal);
+                          setIsDeposit(false);
                           setWithdrawDialogOpen(true);
                         }}
                       >
@@ -165,11 +210,21 @@ const SafeBox = () => {
           />
           <TextField
             fullWidth
+            label="Cantidad inicial"
+            type="number"
+            value={newGoal.initialAmount || ''}
+            onChange={(e) => setNewGoal({ ...newGoal, initialAmount: Number(e.target.value) })}
+            margin="normal"
+            inputProps={{ min: "0", step: "0.01" }}
+          />
+          <TextField
+            fullWidth
             label="Cantidad objetivo"
             type="number"
             value={newGoal.targetAmount || ''}
             onChange={(e) => setNewGoal({ ...newGoal, targetAmount: Number(e.target.value) })}
             margin="normal"
+            inputProps={{ min: "0.01", step: "0.01" }}
           />
           <TextField
             fullWidth
@@ -178,6 +233,7 @@ const SafeBox = () => {
             value={newGoal.monthlyContribution || ''}
             onChange={(e) => setNewGoal({ ...newGoal, monthlyContribution: Number(e.target.value) })}
             margin="normal"
+            inputProps={{ min: "0.01", step: "0.01" }}
           />
           <TextField
             fullWidth
@@ -189,6 +245,9 @@ const SafeBox = () => {
             InputLabelProps={{
               shrink: true,
             }}
+            inputProps={{
+              min: new Date().toISOString().split('T')[0]
+            }}
           />
         </DialogContent>
         <DialogActions>
@@ -197,24 +256,60 @@ const SafeBox = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Diálogo para retiros */}
-      <Dialog open={withdrawDialogOpen} onClose={() => setWithdrawDialogOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle>Retirar Fondos</DialogTitle>
+      {/* Diálogo para retiros/depósitos */}
+      <Dialog open={withdrawDialogOpen} onClose={() => setWithdrawDialogOpen(false)}>
+        <DialogTitle>{isDeposit ? 'Agregar Fondos' : 'Retirar Fondos'}</DialogTitle>
         <DialogContent>
           {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
           <TextField
             fullWidth
-            label="Cantidad a retirar"
+            label={isDeposit ? 'Cantidad a agregar' : 'Cantidad a retirar'}
             type="number"
-            value={withdrawAmount}
-            onChange={(e) => setWithdrawAmount(Number(e.target.value))}
+            value={withdrawAmount || ''}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Permitir campo vacío para facilitar la edición
+              if (value === '') {
+                setWithdrawAmount(0);
+                return;
+              }
+              // Convertir a número y validar
+              const amount = Number(value);
+              if (amount < 0) {
+                setError('La cantidad no puede ser negativa');
+                return;
+              }
+              setWithdrawAmount(amount);
+              setError('');
+            }}
             margin="normal"
+            inputProps={{
+              step: "0.01",
+              min: "0.01",
+              placeholder: "Ingresa la cantidad"
+            }}
+            InputProps={{
+              startAdornment: <Typography sx={{ mr: 1 }}>$</Typography>
+            }}
+            autoFocus
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setWithdrawDialogOpen(false)}>Cancelar</Button>
-          <Button onClick={handleWithdraw} variant="contained" color="primary">
-            Confirmar
+          <Button onClick={() => {
+            setWithdrawDialogOpen(false);
+            setWithdrawAmount(0);
+            setError('');
+            setIsDeposit(false);
+          }}>
+            Cancelar
+          </Button>
+          <Button 
+            onClick={handleTransaction} 
+            variant="contained" 
+            color="primary"
+            disabled={withdrawAmount <= 0 || (isDeposit ? false : selectedGoal && withdrawAmount > selectedGoal.currentAmount)}
+          >
+            {isDeposit ? 'Agregar' : 'Retirar'}
           </Button>
         </DialogActions>
       </Dialog>

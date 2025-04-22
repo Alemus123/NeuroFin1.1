@@ -304,8 +304,27 @@ export default function Login() {
               },
             }}
           >
-            {isLoading ? <CircularProgress size={24} /> : "LOGIN"}
+            {isLoading ? <CircularProgress size={24} /> : "Iniciar Sesión"}
           </Button>
+
+          <Box sx={{ textAlign: "center" }}>
+            <Link
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/register");
+              }}
+              sx={{
+                color: "rgba(255, 255, 255, 0.7)",
+                textDecoration: "none",
+                "&:hover": {
+                  color: "white",
+                },
+              }}
+            >
+              ¿No tienes una cuenta? Regístrate
+            </Link>
+          </Box>
         </Box>
       </Paper>
     </Container>
