@@ -90,12 +90,6 @@ export default function Login() {
           position: "relative",
           zIndex: 1,
         }}
-      />
-
-      {/* Contenido */}
-      <Container
-        maxWidth="lg"
-        sx={{ display: "flex", alignItems: "center", height: "100vh" }}
       >
         <Box
           sx={{
