@@ -75,14 +75,26 @@ export default function Profile() {
                     color: theme.palette.mode === 'dark' ? '#fff' : '#000',
                     fontWeight: 600
                   }}>
-                    Bienvenido a NeuroFin
+                    {user?.firstName} {user?.lastName}
                   </Typography>
                   <Typography variant="subtitle1" sx={{
                     color: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)',
                     mb: 2
                   }}>
-                    Tu plataforma de gestión financiera personal.
+                    {user?.email}
                   </Typography>
+                  {user?.financialPersonality && (
+                    <Chip
+                      label={`Perfil Financiero: ${user.financialPersonality.charAt(0).toUpperCase() + user.financialPersonality.slice(1)}`}
+                      sx={{
+                        bgcolor: theme.palette.mode === 'dark' ? 'rgba(50, 205, 50, 0.1)' : 'rgba(27, 94, 32, 0.05)',
+                        color: theme.palette.mode === 'dark' ? '#32CD32' : '#1B5E20',
+                        border: '1px solid',
+                        borderColor: theme.palette.mode === 'dark' ? 'rgba(50, 205, 50, 0.3)' : 'rgba(27, 94, 32, 0.3)',
+                        mb: 2
+                      }}
+                    />
+                  )}
                   <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                     {userBadges.map((badge, index) => (
                       <Chip

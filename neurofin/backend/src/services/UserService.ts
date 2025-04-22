@@ -9,8 +9,19 @@ interface User {
   lastName: string;
   email: string;
   password: string;
+  financialPersonality?: string;
+  role?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+interface CreateUserInput {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  financialPersonality: string;
+  role?: string;
 }
 
 @Service()
@@ -24,6 +35,26 @@ export class UserService {
     } catch (error) {
       console.error('Error al cargar usuarios:', error);
       this.users = [];
+    }
+  }
+
+  async create(input: CreateUserInput): Promise<User> {
+    try {
+      const hashedPassword = await bcrypt.hash(input.password, 10);
+      const newUser: User = {
+        id: (this.users.length + 1).toString(),
+        ...input,
+        password: hashedPassword,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      this.users.push(newUser);
+      console.log(`Usuario creado exitosamente: ${newUser.email}`);
+      return newUser;
+    } catch (error) {
+      console.error('Error en create:', error);
+      throw new BadRequest('Error al crear usuario');
     }
   }
 

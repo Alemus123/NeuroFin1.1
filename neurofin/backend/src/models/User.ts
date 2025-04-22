@@ -1,4 +1,4 @@
-/*import { Property, Required, Format, MinLength } from '@tsed/schema';
+import { Property, Required, Format, MinLength } from '@tsed/schema';
 import { Model, ObjectID } from '@tsed/mongoose';
 
 @Model()
@@ -25,9 +25,15 @@ export class User {
   password: string;
 
   @Property()
+  @Required()
+  financialPersonality: string;
+
+  @Property()
+  role: string = 'user';
+
+  @Property()
   createdAt: Date = new Date();
 
   @Property()
   updatedAt: Date = new Date();
 }
-*/
